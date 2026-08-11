@@ -3,7 +3,7 @@ package com.code.fill_the_blank.dto;
 // DB에서 가져온 데이터를 담을 객체
 public class RecommendationInput {
 	private Long idleId;
-	private Long areaCode;
+	private String areaCode;
 	private Double facilitySize;
 	
 	private Integer cultureFacilityCnt;
@@ -24,10 +24,10 @@ public class RecommendationInput {
 	public void setIdleId(Long idleId) {
 		this.idleId = idleId;
 	}
-	public Long getAreaCode() {
+	public String getAreaCode() {
 		return areaCode;
 	}
-	public void setAreaCode(Long areaCode) {
+	public void setAreaCode(String areaCode) {
 		this.areaCode = areaCode;
 	}
 	public Double getFacilitySize() {

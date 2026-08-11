@@ -38,7 +38,7 @@ public class RecommendationRepository {
 		return jdbcTemplate.query(sql, (rs, rowNum) -> {
 			RecommendationInput data = new RecommendationInput();
 			
-			data.setAreaCode(rs.getLong("area_code"));
+			data.setAreaCode(rs.getString("area_code"));
 			data.setCultureFacilityCnt(rs.getInt("culture_facility_cnt"));
             data.setWelfareFacilityCnt(rs.getInt("welfare_facility_cnt"));
             data.setCommercialAreaCnt(rs.getInt("commercial_area_cnt"));
@@ -87,7 +87,7 @@ public class RecommendationRepository {
 			RecommendationInput data = new RecommendationInput();
 			
             data.setIdleId(rs.getLong("idle_id"));
-            data.setAreaCode(rs.getLong("area_code"));
+            data.setAreaCode(rs.getString("area_code"));
 
             data.setFacilitySize(rs.getDouble("facility_size"));
 
