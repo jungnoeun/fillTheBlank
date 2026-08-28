@@ -48,9 +48,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.oracle.database.jdbc</groupId>
-			<artifactId>ojdbc17</artifactId>
-			<scope>runtime</scope>
+    			<groupId>org.postgresql</groupId>
+   	 		<artifactId>postgresql</artifactId>
+    			<scope>runtime</scope>
 		</dependency>
 		
 		<dependency>
