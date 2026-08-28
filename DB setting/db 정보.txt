@@ -1,0 +1,40 @@
+SQL*Plus: Release 21.0.0.0.0 - Production on 목 8월 27 13:05:01 2026
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle.  All rights reserved.
+
+사용자명 입력: system
+비밀번호 입력:
+마지막 성공한 로그인 시간: 목 8월  27 2026 11:28:40 +09:00
+
+다음에 접속됨:
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+SQL> SQL> create user C##PROJECT IDENTIFIED BY user DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp QUOTA UNLIMITED ON users;
+SP2-0734: "SQL> creat..."(으)로 시작되는 알 수 없는 명령 - 나머지 줄은 무시되었습니다.
+SQL> create user C##project1
+  2  IDENTIFIED BY user
+  3  DEFAULT TABLESPACE users
+  4  TEMPORARY TABLESPACE temp QUOTA UNLIMITED ON users;
+
+사용자가 생성되었습니다.
+
+SQL> grant connect, resource to C##project1
+  2  ;
+
+권한이 부여되었습니다.
+
+SQL> alter user C##project1 account unlock
+  2  ;
+
+사용자가 변경되었습니다.
+
+SQL> commit;
+
+커밋이 완료되었습니다.
+
+SQL> connect c##project1;
+비밀번호 입력:
+연결되었습니다.
+SQL>
