@@ -1,0 +1,22 @@
+name: Render Keep-Alive Ping
+
+on:
+  schedule:
+    # KST 07:00 ~ 23:59
+    # GitHub Actions는 UTC 기준
+    - cron: '*/10 22-23 * * *'
+    - cron: '*/10 0-14 * * *'
+
+  # GitHub Actions 화면에서 수동 실행 가능
+  workflow_dispatch:
+
+jobs:
+  keep_alive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ping Render service
+        run: |
+          curl -fsS -o /dev/null \
+            -H "User-Agent: GitHubActions-KeepAlive/1.0" \
+            "https://filltheblank.onrender.com/idle-space-list"
