@@ -2,8 +2,7 @@ name: Render Keep-Alive Ping
 
 on:
   schedule:
-    - cron: '*/10 22-23 * * *'
-    - cron: '*/10 0-14 * * *'
+    - cron: '*/10 * * * *'
 
   workflow_dispatch:
 
@@ -22,6 +21,5 @@ jobs:
 
           echo "Ping Render:"
           curl -i \
-            --max-time 180 \
             -H "User-Agent: GitHubActions-KeepAlive/1.0" \
             "https://filltheblank.onrender.com/idle-space-list"
