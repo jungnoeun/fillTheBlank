@@ -2,12 +2,9 @@ name: Render Keep-Alive Ping
 
 on:
   schedule:
-    # KST 07:00 ~ 23:59
-    # GitHub Actions는 UTC 기준
     - cron: '*/10 22-23 * * *'
     - cron: '*/10 0-14 * * *'
 
-  # GitHub Actions 화면에서 수동 실행 가능
   workflow_dispatch:
 
 jobs:
@@ -17,6 +14,14 @@ jobs:
     steps:
       - name: Ping Render service
         run: |
-          curl -fsS -o /dev/null \
+          echo "Current UTC time:"
+          date -u
+
+          echo "Current KST time:"
+          TZ=Asia/Seoul date
+
+          echo "Ping Render:"
+          curl -i \
+            --max-time 180 \
             -H "User-Agent: GitHubActions-KeepAlive/1.0" \
             "https://filltheblank.onrender.com/idle-space-list"
