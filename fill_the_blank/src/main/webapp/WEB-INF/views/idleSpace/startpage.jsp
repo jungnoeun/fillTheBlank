@@ -295,7 +295,7 @@ body {
 	<nav class="header-nav">
 		<a href="#" class="active">메인 페이지</a>
 		<a href="#">로그인</a>
-		<a href="#">회원가입</a>
+		<a href="/signup">회원가입</a>
 	</nav>
 
 </header>
