@@ -26,7 +26,7 @@ public class IdleSpaceController {
 		return "idleSpace/list";
 	}
 	
-	@GetMapping("/")
+	@GetMapping("/introduction")
 	public String startPage() {
 		return "idleSpace/startpage";
 	}
