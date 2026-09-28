@@ -33,7 +33,7 @@
 `HTML/CSS` `JavaScript` `Kakao Map API`
 
 **Deployment**
-`Docker` `Render`
+`Docker` `Render` `Supabase`
 
 ---
 
