@@ -294,8 +294,23 @@ body {
 
 	<nav class="header-nav">
 		<a href="#" class="active">메인 페이지</a>
-		<a href="#">로그인</a>
-		<a href="/signup">회원가입</a>
+<!--		<a href="#">로그인</a>
+		<a href="/signup">회원가입</a> -->
+		<% if (session.getAttribute("loginMember") == null) { %>
+
+        	<a href="/login">로그인</a>
+        	<a href="/signup">회원가입</a>
+
+    	<% } else { %>
+
+        	<span>
+            	<%= ((com.code.fill_the_blank.dto.Member)
+                    session.getAttribute("loginMember")).getName() %>님
+        	</span>
+
+        	<a href="/logout">로그아웃</a>
+
+   	 	<% } %>
 	</nav>
 
 </header>

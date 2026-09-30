@@ -1,5 +1,6 @@
 package com.code.fill_the_blank.service;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,25 @@ public class MemberService {
 		String encodedPassword = passwordEncoder.encode(member.getPassword());
 		member.setPassword(encodedPassword);
 		memberRepository.save(member);
+	}
+	
+	public Member login(String username, String password) {
+		Member member;
+		
+		try {
+			member = memberRepository.findByUsername(username);
+		} catch (EmptyResultDataAccessException e) {
+			// TODO: handle exception
+			return null;
+		}
+		
+		boolean passwordMatch = passwordEncoder.matches(password, member.getPassword());
+		
+		if(!passwordMatch) {
+			return null;
+		}
+		
+		return member;
 	}
 	
 }

@@ -33,4 +33,30 @@ public class MemberRepository {
 				);	
 				
 	}
+	
+	public Member findByUsername(String username) {
+		String sql = """
+				SELECT
+					member_id,
+					username,
+					password,
+					name,
+					email
+				FROM member
+				WHERE username = ?
+				""";
+		
+		return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->{
+				
+			Member member = new Member();
+			member.setMemberId(rs.getLong("member_id"));
+			member.setUsername(rs.getString("username"));
+			member.setPassword(rs.getString("password"));
+			member.setName(rs.getString("name"));
+			member.setEmail(rs.getString("email"));
+			
+			return member;
+			}, username
+		);
+	}
 }
