@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -296,21 +296,23 @@ body {
 		<a href="#" class="active">메인 페이지</a>
 <!--		<a href="#">로그인</a>
 		<a href="/signup">회원가입</a> -->
-		<% if (session.getAttribute("loginMember") == null) { %>
+		<div class="header-right">
 
-        	<a href="/login">로그인</a>
-        	<a href="/signup">회원가입</a>
+    		<c:choose>
 
-    	<% } else { %>
+        		<c:when test="${empty sessionScope.loginMember}">
+            		<a href="/login">로그인</a>
+            		<a href="/signup">회원가입</a>
+        		</c:when>
 
-        	<span>
-            	<%= ((com.code.fill_the_blank.dto.Member)
-                    session.getAttribute("loginMember")).getName() %>님
-        	</span>
+        		<c:otherwise>
+            		<span>${sessionScope.loginMember.name}님</span>
+            		<a href="/logout">로그아웃</a>
+        		</c:otherwise>
 
-        	<a href="/logout">로그아웃</a>
+    		</c:choose>
 
-   	 	<% } %>
+		</div>
 	</nav>
 
 </header>
