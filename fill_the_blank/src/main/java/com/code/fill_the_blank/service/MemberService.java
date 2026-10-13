@@ -43,4 +43,13 @@ public class MemberService {
 		return member;
 	}
 	
+	// refresh token에서 추출한 사용자 일므으로 회원정보를 조회할때 사용
+	public Member findByUsername(String username) {
+		try {
+			return memberRepository.findByUsername(username);
+		} catch (EmptyResultDataAccessException e) {
+			// TODO: handle exception
+			return null;
+		}
+	}
 }

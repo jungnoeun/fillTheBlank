@@ -61,4 +61,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		return null;
 	}
 
+	// /token/refresh 요청은 Access Token 검증 필터를 건너뛰고 컨트롤러에서 별도로 refresh token을 검증
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		return "/token/refresh".equals(request.getServletPath());
+	}
 }

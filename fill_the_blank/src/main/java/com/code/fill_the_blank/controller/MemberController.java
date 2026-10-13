@@ -1,12 +1,19 @@
 package com.code.fill_the_blank.controller;
 
+import java.time.LocalDateTime;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.code.fill_the_blank.dto.Member;
 import com.code.fill_the_blank.jwt.JwtTokenProvider;
+import com.code.fill_the_blank.repository.RefreshTokenRepository;
 import com.code.fill_the_blank.service.MemberService;
 
 import jakarta.servlet.http.Cookie;
@@ -17,10 +24,12 @@ import jakarta.servlet.http.HttpSession;
 public class MemberController {
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final RefreshTokenRepository refreshTokenRepository;
 	
-	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider) {
+	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository) {
 		this.memberService = memberService;
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.refreshTokenRepository = refreshTokenRepository;
 	}
 	
 	@GetMapping("/signup")
@@ -49,15 +58,29 @@ public class MemberController {
 		session.setAttribute("loginMember", member);
 		
 		// JWT 생성
+		// Access Token 생성
 		String accessToken = jwtTokenProvider.createAccessToken(member);
+		// Refresh Toekn 생성
+		String refreshToken = jwtTokenProvider.createRefreshToken(member);
+		
+		// Refresh Token을 DB에 저장
+		refreshTokenRepository.save(member.getMemberId(), refreshToken, LocalDateTime.now().plusDays(7));
 		
 		// JWT를 쿠키에 저장
-		Cookie cookie = new Cookie("accessToken", accessToken);
-		cookie.setHttpOnly(true); // js 통한 쿠키 접근 차단
-		cookie.setPath("/"); // 쿠키 전송 범위
-		cookie.setMaxAge(30*60); // 쿠키 수명 30분
+		// Access Token Cookie
+		Cookie accessCookie = new Cookie("accessToken", accessToken);
+		accessCookie.setHttpOnly(true); // js 통한 쿠키 접근 차단
+		accessCookie.setPath("/"); // 쿠키 전송 범위
+		accessCookie.setMaxAge(30*60); // 쿠키 수명 30분
 		
-		response.addCookie(cookie);
+		response.addCookie(accessCookie);
+		
+		// Refresh Token Cookie
+		Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+		refreshCookie.setHttpOnly(true);
+		refreshCookie.setPath("/");
+		refreshCookie.setMaxAge(7*24*60*60);
+		response.addCookie(refreshCookie);
 		
 		return "redirect:/introduction";
 	}
@@ -66,5 +89,54 @@ public class MemberController {
 	public String logout(HttpSession session) {
 		session.invalidate();
 		return "redirect:/introduction";
+	}
+	
+	@PostMapping("/token/refresh")
+	@ResponseBody
+	public ResponseEntity<String> refreshAccessToken(@CookieValue(value = "refreshToken",required = false) String refreshToken, HttpServletResponse response) {
+		
+		// 1. Refresh Token 쿠키 확인 - refresh token이 없으면 실패
+		if(refreshToken == null || refreshToken.isBlank()) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Refresh Token이 없습니다.");
+		}
+		
+		// 2. JWT 서명 및 만료 여부 확인 
+		if(!jwtTokenProvider.validateToken(refreshToken)) {
+			refreshTokenRepository.deleteByToken(refreshToken);
+			
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Refresh Token이 만료되었거나 유효하지 않습니다.");
+		}
+		
+		// 3. DB에 저장된 토큰인지 확인
+		if(!refreshTokenRepository.existsByToken(refreshToken)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("등록되지 않은 Refresh Token입니다.");
+		}
+		
+		// 4. refresh token에서 username 추출
+		String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+		
+		// 5. 회원 조회
+		Member member = memberService.findByUsername(username);
+		if(member == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("회원 정보를 찾을 수 없습니다.");
+		}
+		
+		// 6. 새 Access Token 발급 및 쿠키 갱신
+		String newAccessToken = jwtTokenProvider.createAccessToken(member);
+		Cookie accessCookie = new Cookie("accessToken", newAccessToken);
+		
+		accessCookie.setHttpOnly(true);
+		accessCookie.setPath("/");
+		accessCookie.setMaxAge(30*60);
+		response.addCookie(accessCookie);
+		
+		return ResponseEntity.ok("Access Token이 재발급되었습니다.");
+				
 	}
 }

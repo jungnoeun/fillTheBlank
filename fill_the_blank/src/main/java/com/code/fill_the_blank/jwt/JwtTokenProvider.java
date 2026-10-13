@@ -20,6 +20,7 @@ public class JwtTokenProvider {
 	private final SecretKey key;
 	
 	private final long accessTokenValidity = 1000L * 60 * 30; // access token 유효기간 30분
+	private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // refresh token 유효기간 7일
 	
 	public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
 		this.key = Keys.hmacShaKeyFor(secret.getBytes());
@@ -55,5 +56,32 @@ public class JwtTokenProvider {
 			return false;
 		}
 	}
+	
+	public String createRefreshToken(Member member) {
+		Date now = new Date();
+		Date expiry = new Date(now.getTime()+refreshTokenValidity);
+		
+		return Jwts.builder()
+				.subject(member.getUsername())
+				.issuedAt(now)
+				.expiration(expiry)
+				.signWith(key)
+				.compact();
+	}
+	
+	public SecretKey getKey() {
+		return key;
+	}
+	
+	// refresh token의 서명과 유효기간 확인 -> 토큰에 저장된 사용자 이름(subject) 가져옴
+	public String getUsernameFromToken(String token) { 
+		return Jwts.parser()
+				.verifyWith(key)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.getSubject();
+	}
+	
 	
 }
