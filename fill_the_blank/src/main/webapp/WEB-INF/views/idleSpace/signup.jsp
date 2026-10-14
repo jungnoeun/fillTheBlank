@@ -109,7 +109,7 @@ body {
 	</div>
 
 
-	<form action="/signup" method="post">
+	<form action="${pageContext.request.contextPath}/signup" method="post">
 
 		<div class="form-group">
 			<label for="username">아이디</label>
@@ -160,7 +160,7 @@ body {
 
 	<div class="login-link">
 		이미 회원이신가요?
-		<a href="#">로그인</a>
+		<a href="${pageContext.request.contextPath}/login">로그인</a>
 	</div>
 
 </div>

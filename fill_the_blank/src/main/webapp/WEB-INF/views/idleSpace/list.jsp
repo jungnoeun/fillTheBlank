@@ -20,6 +20,7 @@
 <script type="text/javascript"
 	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=621670cf124241c7373264f0855aedbe">
 </script>
+<script src="${pageContext.request.contextPath}/js/apiFetch.js"></script>
 
 <style>
 * {
@@ -1122,7 +1123,7 @@ function showInfoWindow(marker) {
        추천 API 호출
        ===================================================== */
 
-    fetch(
+    apiFetch(
         '${pageContext.request.contextPath}/recommendation/' +
         data.idleId
     )

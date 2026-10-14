@@ -28,15 +28,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		
 		// jwt가 없으면 일단 요청을 계속 진행 - 로그인 하지 않은 사용자도 홈페이지 입장 가능
 		if(accessToken == null) {
-			filterChain.doFilter(request, response);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("text/plain;charset=UTF-8");
+			response.getWriter().write("Access Token이 없습니다");
 			return;
 		}
 		
-		// jwt가 있으면 검증
+		// access token 검증
 		if(!jwtTokenProvider.validateToken(accessToken)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("text/plain;charset=UTF-8");
-			response.getWriter().write("유효하거나 만료된 JWT입니다.");
+			response.getWriter().write("유효하지 않거나 만료된 JWT입니다.");
 			return;
 		}
 		
@@ -64,6 +66,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	// /token/refresh 요청은 Access Token 검증 필터를 건너뛰고 컨트롤러에서 별도로 refresh token을 검증
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		return "/token/refresh".equals(request.getServletPath());
+		String path = request.getServletPath();
+		
+		// refresh token 재발급은 컨트롤러에서 별도로 검증
+		if("/token/refresh".equals(path)) {
+			return true;
+		}
+		
+		return !path.startsWith("/recommendation/");
 	}
 }

@@ -356,7 +356,7 @@ body {
 
 
 			<!-- 유휴공간 리스트 -->
-			<a href="/idle-space-list" class="menu-card">
+			<a href="${pageContext.request.contextPath}/idle-space-list" class="menu-card">
 				<div class="menu-icon">⌂</div>
 				<div class="menu-title">
 					유휴공간 찾기

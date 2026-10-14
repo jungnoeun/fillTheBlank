@@ -112,7 +112,7 @@
         </div>
     <% } %>
 
-    <form class="login-form" action="/login" method="post">
+    <form class="login-form" action="${pageContext.request.contextPath}/login" method="post">
 
         <input
             type="text"
@@ -134,7 +134,7 @@
 
     <div class="signup-link">
         아직 회원이 아니신가요?
-        <a href="/signup">회원가입</a>
+        <a href="${pageContext.request.contextPath}/signup">회원가입</a>
     </div>
 
 </div>
