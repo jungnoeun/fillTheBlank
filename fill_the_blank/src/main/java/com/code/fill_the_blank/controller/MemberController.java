@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.code.fill_the_blank.dto.Member;
 import com.code.fill_the_blank.jwt.JwtTokenProvider;
+import com.code.fill_the_blank.repository.AccessTokenBlacklistRepository;
 import com.code.fill_the_blank.repository.RefreshTokenRepository;
 import com.code.fill_the_blank.service.MemberService;
 
@@ -25,11 +26,14 @@ public class MemberController {
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 	
-	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository) {
+	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository,
+			AccessTokenBlacklistRepository accessTokenBlacklistRepository) {
 		this.memberService = memberService;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.refreshTokenRepository = refreshTokenRepository;
+		this.accessTokenBlacklistRepository = accessTokenBlacklistRepository;
 	}
 	
 	@GetMapping("/signup")
@@ -86,7 +90,14 @@ public class MemberController {
 	}
 	
 	@GetMapping("/logout")
-	public String logout(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpSession session, HttpServletResponse response) {
+	public String logout(@CookieValue(value = "accessToken", required = false) String accessToken ,
+			@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpSession session, HttpServletResponse response) {
+		
+		// access token을 블랙리스트에 등록
+		if(accessToken!=null && !accessToken.isBlank() && jwtTokenProvider.validateToken(accessToken)) {
+			accessTokenBlacklistRepository.save(accessToken, jwtTokenProvider.getExpireationFromToken(accessToken));
+		}
+		
 		// 1. DB에 저장된 refresh token 삭제
 		if(refreshToken != null && !refreshToken.isBlank()) {
 			refreshTokenRepository.deleteByToken(refreshToken);

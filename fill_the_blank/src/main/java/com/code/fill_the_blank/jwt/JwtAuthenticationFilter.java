@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.code.fill_the_blank.repository.AccessTokenBlacklistRepository;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -14,9 +16,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component // spring bean으로 생성
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenProvider jwtTokenProvider;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 	
-	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+	public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, AccessTokenBlacklistRepository accessTokenBlacklistRepository) {
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.accessTokenBlacklistRepository = accessTokenBlacklistRepository;
 	}
 	
 
@@ -39,6 +43,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("text/plain;charset=UTF-8");
 			response.getWriter().write("유효하지 않거나 만료된 JWT입니다.");
+			return;
+		}
+		
+		// 블랙리스트에 등록된 Access token인지 확인
+		if(accessTokenBlacklistRepository.existsByToken(accessToken)) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("text/plain;charset=UTF-8");
+			response.getWriter().write("폐기된 Access Token입니다.");
 			return;
 		}
 		

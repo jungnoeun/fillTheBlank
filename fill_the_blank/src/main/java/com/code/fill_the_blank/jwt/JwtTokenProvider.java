@@ -1,5 +1,7 @@
 package com.code.fill_the_blank.jwt;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -83,5 +85,18 @@ public class JwtTokenProvider {
 				.getSubject();
 	}
 	
-	
+	// JWT에서 만료시간을 가져오는 메서드
+	public LocalDateTime getExpireationFromToken(String token) {
+		
+		Date expiration = Jwts.parser()
+				.verifyWith(getKey())
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.getExpiration();
+		
+		return expiration.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
+	}
 }
