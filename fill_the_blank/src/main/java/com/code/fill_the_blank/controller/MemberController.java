@@ -86,8 +86,29 @@ public class MemberController {
 	}
 	
 	@GetMapping("/logout")
-	public String logout(HttpSession session) {
+	public String logout(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpSession session, HttpServletResponse response) {
+		// 1. DB에 저장된 refresh token 삭제
+		if(refreshToken != null && !refreshToken.isBlank()) {
+			refreshTokenRepository.deleteByToken(refreshToken);
+		}
+		
+		// 2. 세션 무효화
 		session.invalidate();
+		
+		// 3. access token 쿠키 삭제
+		Cookie accessCookie = new Cookie("accessToken", "");
+		accessCookie.setHttpOnly(true);
+		accessCookie.setPath("/");
+		accessCookie.setMaxAge(0);
+		response.addCookie(accessCookie);
+		
+		// 4. refresh token 쿠키 삭제 - 쿠키의 수명을 0으로 설정하여 브라우저에서 제거
+		Cookie refreshCookie = new Cookie("refreshToken", "");
+		refreshCookie.setHttpOnly(true);
+		refreshCookie.setPath("/");
+		refreshCookie.setMaxAge(0);
+		response.addCookie(refreshCookie);
+		
 		return "redirect:/introduction";
 	}
 	
