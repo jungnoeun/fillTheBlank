@@ -11,6 +11,7 @@
 <h2>Hello world</h2>
 <hr>
 현재 날짜와 시간은 <%=java.time.LocalDateTime.now() %> 입니다.
+branch 테스트 코드입니다.
 
 </body>
 </html>
