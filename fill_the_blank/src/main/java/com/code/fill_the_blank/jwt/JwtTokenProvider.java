@@ -99,4 +99,20 @@ public class JwtTokenProvider {
 				.atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
 	}
+	
+	// accesss token에서 회원 Id 추출 - 서명과 유효기간 확인 후 추출, 블랙리스트 여부 확인X -> 인증 필터 통과 후 실행 필수
+	public Long getMemeberIdFromToken(String token) {
+		Number memberId = Jwts.parser()
+				.verifyWith(key)
+				.build()
+				.parseSignedClaims(token)
+				.getPayload()
+				.get("memberId", Number.class);
+		
+		if(memberId == null) {
+			throw new IllegalArgumentException("JWT에 회원 ID가 없습니다.");
+		}
+		
+		return memberId.longValue();
+	}
 }

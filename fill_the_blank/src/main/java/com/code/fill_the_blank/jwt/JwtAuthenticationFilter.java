@@ -85,6 +85,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return true;
 		}
 		
-		return !path.startsWith("/recommendation/");
+		// JWT 인증이 필요한 경로
+		boolean requiresAuthentication = path.startsWith("/recommendation/") || path.startsWith("/api/chat");
+		
+		return !requiresAuthentication;
 	}
 }
