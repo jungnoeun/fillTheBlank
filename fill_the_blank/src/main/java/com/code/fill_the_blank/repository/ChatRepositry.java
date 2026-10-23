@@ -19,8 +19,8 @@ public class ChatRepositry {
 	// 유휴공간에 연결된 채팅방 조회
 	public ChatRoom findRoomByIdleId(Long idleId) {
 		String sql = """
-				SELECT * room_id, idle_id, created_at
-				FROM CHATROOM
+				SELECT room_id, idle_id, created_at
+				FROM chat_room
 				WHERE idle_id = ?
 				""";
 		
@@ -60,7 +60,7 @@ public class ChatRepositry {
 	public int rejoinRoom(String roomId, Long memberId) {
 		String sql = """
 				UPDATE chat_room_member
-				SET joined_at = CURRENT_TIMESTAMP
+				SET joined_at = CURRENT_TIMESTAMP,
 					left_at = NULL
 				WHERE room_id = ?
 				AND member_id = ?
@@ -76,6 +76,7 @@ public class ChatRepositry {
 				SELECT COUNT(*)
 				FROM chat_room_member
 				WHERE room_id = ?
+				AND member_id = ?
 				AND left_at IS NULL
 				""";
 		
