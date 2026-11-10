@@ -73,14 +73,20 @@ public class ChatService {
 	}
 	
 	// 채팅 메시지 저장
+	@Transactional
 	public ChatMessage sendMessage(String roomId, Long memberId, String content) {
+		
+	    System.out.println("[SERVICE] roomId: " + roomId);
+	    System.out.println("[SERVICE] memberId: " + memberId);
+	    System.out.println("[SERVICE] content: [" + content + "]");
+		
 		// 채팅방 참여 여부 확인
 		if(!chatRepositry.isRoomMember(roomId, memberId)) {
 			throw new IllegalStateException("채팅방에 참여한 사용자만 메시지를 보낼 수 있습니다.");
 		}
 		
 		// 빈 메시지 방지
-		if(content != null || content.isBlank()) {
+		if(content == null || content.isBlank()) {
 			throw new IllegalArgumentException("메시지를 입력해주세요.");
 		}
 		
@@ -92,12 +98,12 @@ public class ChatService {
 		message.setMessageId(UUID.randomUUID().toString());
 		message.setRoomId(roomId);
 		message.setSenderId(memberId);
-		message.setContent(content);
+		message.setContent(content.trim());
 		
-		// DB 저장
 		chatRepositry.saveMessage(message);
 		
-		return message;
+		// 저장된 메시지를 다시 조회해서 senderName, createAt까지 포함해서 반환
+		return chatRepositry.findMessageById(message.getMessageId());
 	}
 	
 	@Transactional(readOnly = true)

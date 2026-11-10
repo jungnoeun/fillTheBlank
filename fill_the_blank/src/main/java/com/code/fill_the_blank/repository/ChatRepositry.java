@@ -143,4 +143,33 @@ public class ChatRepositry {
 		
 	}
 	
+	// Broadcast
+	public ChatMessage findMessageById(String messageId) {
+		String sql = """
+				SELECT
+					cm.message_id,
+				    cm.room_id,
+            	    cm.sender_id,
+            	    m.name AS sender_name,
+            	    cm.content,
+            	    cm.created_at
+        	    FROM chat_message cm
+        	    JOIN member m
+          	      ON cm.sender_id = m.member_id
+        	    WHERE cm.message_id = ?
+				""";
+		
+		return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+			ChatMessage message = new ChatMessage();
+			message.setMessageId(rs.getString("message_id"));
+			message.setRoomId(rs.getString("room_id"));
+			message.setSenderId(rs.getLong("sender_id"));
+			message.setSenderName(rs.getString("sender_name"));
+			message.setContent(rs.getString("content"));
+			message.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+			
+			return message;
+		}, messageId);
+	}
+	
 }
