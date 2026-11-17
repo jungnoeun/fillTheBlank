@@ -25,9 +25,7 @@ public class ChatWebSocketController {
 	@MessageMapping("/chat/rooms/{roomId}")
 	public void sendMessage(@DestinationVariable String roomId, ChatSendRequest request,SimpMessageHeaderAccessor accessor) {
 		
-		System.out.println("[CHAT] ===== Controller 진입 =====");
 		System.out.println("[CHAT] roomId: " + roomId);
-		System.out.println("[CHAT] content: " + request.getContent());
 		
 		// 세션 정보 확인
 		Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
@@ -37,19 +35,15 @@ public class ChatWebSocketController {
 		
 		Object memberIdValue = sessionAttributes.get("memberId");
 		
-		System.out.println("[CHAT] memberIdValue: " + memberIdValue);
-		
 		if(!(memberIdValue instanceof Number memberIdNumber)) {
 			throw new IllegalStateException("인증되지 않은 사용자입니다.");
 		}
 		
 		Long memberId = memberIdNumber.longValue();
-		System.out.println("[CHAT] ChatService.sendMessage 호출 전");
 		
 		// DB 저장
 		ChatMessage savedMessage = chatService.sendMessage(roomId, memberId, request.getContent());
 		
-		System.out.println("[CHAT] DB 저장 및 조회 완료");
         System.out.println(
                 "[CHAT] messageId: "
                 + savedMessage.getMessageId()

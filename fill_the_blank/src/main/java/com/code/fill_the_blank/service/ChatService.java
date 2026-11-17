@@ -77,8 +77,6 @@ public class ChatService {
 	public ChatMessage sendMessage(String roomId, Long memberId, String content) {
 		
 	    System.out.println("[SERVICE] roomId: " + roomId);
-	    System.out.println("[SERVICE] memberId: " + memberId);
-	    System.out.println("[SERVICE] content: [" + content + "]");
 		
 		// 채팅방 참여 여부 확인
 		if(!chatRepositry.isRoomMember(roomId, memberId)) {

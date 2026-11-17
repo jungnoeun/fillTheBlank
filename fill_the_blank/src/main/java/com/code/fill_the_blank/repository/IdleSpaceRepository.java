@@ -53,4 +53,16 @@ public class IdleSpaceRepository {
 		
 	}
 	
+	// 유휴공간 상세 조회
+	public String findFacilityNameById(Long idleId) {
+		String sql = """
+				SELECT facility_name
+				FROM idle_space
+				WHERE idle_id = ?
+				""";
+		
+		return jdbcTemplate.queryForObject(sql, String.class ,idleId);
+	}
+	
+	
 }

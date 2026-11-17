@@ -11,15 +11,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import com.code.fill_the_blank.repository.AccessTokenBlacklistRepository;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
 	private final JwtTokenProvider jwtTokenProvider;
+	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 	
-	public WebSocketHandshakeInterceptor(JwtTokenProvider jwtTokenProvider) {
+	public WebSocketHandshakeInterceptor(JwtTokenProvider jwtTokenProvider, AccessTokenBlacklistRepository accessTokenBlacklistRepository) {
 		this.jwtTokenProvider = jwtTokenProvider;
+		this.accessTokenBlacklistRepository = accessTokenBlacklistRepository;
 	}
 	
 	@Override
@@ -32,27 +36,28 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor{
 		}
 		
 		HttpServletRequest httpRequest = servletRequest.getServletRequest();
-		String accessToekn = null;
+		String accessToken = null;
 		
 		Cookie[] cookies = httpRequest.getCookies();
 		
 		if(cookies != null) {
 			for(Cookie cookie : cookies) {
 				if("accessToken".equals(cookie.getName())) {
-					accessToekn = cookie.getValue();
+					accessToken = cookie.getValue();
 					break;
 				}
 			}
 		}
 		
-		if(accessToekn == null || !jwtTokenProvider.validateToken(accessToekn)) {
+		if(accessToken == null || !jwtTokenProvider.validateToken(accessToken) || accessTokenBlacklistRepository.existsByToken(accessToken)) {
 			response.setStatusCode(HttpStatus.UNAUTHORIZED);
 			return false;
 		}
 		
-		Long memberId = jwtTokenProvider.getMemeberIdFromToken(accessToekn);
+		Long memberId = jwtTokenProvider.getMemeberIdFromToken(accessToken);
 		
 		attributes.put("memberId", memberId); // 이후 STOMP 인증에서 사용할 회원 ID 저장
+		attributes.put("accessToken", accessToken); // 웹 소켓 세션에 토큰 자체를 저장
 		
 		return true;
 	}

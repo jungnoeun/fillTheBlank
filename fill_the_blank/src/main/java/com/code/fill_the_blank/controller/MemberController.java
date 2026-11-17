@@ -16,6 +16,7 @@ import com.code.fill_the_blank.jwt.JwtTokenProvider;
 import com.code.fill_the_blank.repository.AccessTokenBlacklistRepository;
 import com.code.fill_the_blank.repository.RefreshTokenRepository;
 import com.code.fill_the_blank.service.MemberService;
+import com.code.fill_the_blank.websocket.WebSocketSessionRegistry;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,13 +28,15 @@ public class MemberController {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
+	private final WebSocketSessionRegistry webSocketSessionRegistry;
 	
 	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository,
-			AccessTokenBlacklistRepository accessTokenBlacklistRepository) {
+			AccessTokenBlacklistRepository accessTokenBlacklistRepository, WebSocketSessionRegistry webSocketSessionRegistry) {
 		this.memberService = memberService;
 		this.jwtTokenProvider = jwtTokenProvider;
 		this.refreshTokenRepository = refreshTokenRepository;
 		this.accessTokenBlacklistRepository = accessTokenBlacklistRepository;
+		this.webSocketSessionRegistry = webSocketSessionRegistry;
 	}
 	
 	@GetMapping("/signup")
@@ -96,6 +99,8 @@ public class MemberController {
 		// access token을 블랙리스트에 등록
 		if(accessToken!=null && !accessToken.isBlank() && jwtTokenProvider.validateToken(accessToken)) {
 			accessTokenBlacklistRepository.save(accessToken, jwtTokenProvider.getExpireationFromToken(accessToken));
+			
+			webSocketSessionRegistry.closeByAccessToken(accessToken); // 해당 accessToken으로 열린 WebSocket모두 종료
 		}
 		
 		// 1. DB에 저장된 refresh token 삭제

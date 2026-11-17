@@ -22,10 +22,13 @@
 </script>
 <script src="${pageContext.request.contextPath}/js/apiFetch.js"></script>
 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
+
 <style>
 * {
 	box-sizing: border-box;
 }
+
 
 body {
 	margin: 0;
@@ -33,6 +36,7 @@ body {
 	background: #f5f6f8;
 	color: #222;
 }
+
 
 /* =========================
    전체 페이지
@@ -44,84 +48,6 @@ body {
 	flex-direction: column;
 }
 
-/* =========================
-   상단 헤더
-   ========================= */
-.header {
-	height: 72px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 35px;
-	background-color: #ffffff;
-	border-bottom: 1px solid #e5e5e5;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-	position: relative;
-	z-index: 10;
-}
-
-/* =========================
-   로고
-   ========================= */
-.header-logo {
-	display: flex;
-	align-items: center;
-	gap: 15px;
-}
-
-.logo-main {
-	font-size: 22px;
-	font-weight: 700;
-	letter-spacing: -0.5px;
-	color: #222;
-}
-
-.logo-sub {
-	padding-left: 15px;
-	border-left: 1px solid #ddd;
-	font-size: 12px;
-	color: #888;
-}
-
-/* =========================
-   상단 메뉴
-   ========================= */
-.header-nav {
-	display: flex;
-	align-items: center;
-	gap: 35px;
-}
-
-.header-nav a {
-	position: relative;
-	text-decoration: none;
-	color: #666;
-	font-size: 14px;
-	font-weight: 500;
-	padding: 25px 0;
-	transition: color 0.2s;
-}
-
-.header-nav a:hover {
-	color: #222;
-}
-
-/* 현재 메뉴 */
-.header-nav a.active {
-	color: #222;
-	font-weight: 700;
-}
-
-/* 현재 메뉴 아래 선 */
-.header-nav a.active::after {
-	content: "";
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 2px;
-	background-color: #222;
-}
 
 /* =================================================
    전체 화면
@@ -436,6 +362,37 @@ body {
 	font-size: 15px !important;
 	font-weight: 400 !important;
 }
+
+
+/* 채팅 참여 버튼 */
+.info-chat-area {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eeeeee;
+}
+
+.chat-entry-button {
+    width: 100%;
+    height: 42px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #222;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: all 0.2s;
+}
+
+.chat-entry-button:hover {
+    background-color: #000;
+    transform: translateY(-1px);
+}
 </style>
 
 </head>
@@ -448,27 +405,15 @@ body {
 		<!-- =========================
          상단 헤더
          ========================= -->
-		<header class="header">
-
-			<div class="header-logo">
-				<div class="logo-main">fill in the blank</div>
-
-				<div class="logo-sub">빈 공간을 새로운 가치로 채우다</div>
-			</div>
-
-			<nav class="header-nav">
-				<a href="#" class="active"> 유휴공간 찾기 </a> <a href="#"> 서비스 소개 </a> <a
-					href="#"> 추천 시스템 </a>
-			</nav>
-
-		</header>
+		<jsp:include page="/WEB-INF/views/common/header.jsp">
+    		<jsp:param name="activeMenu" value="idle" />
+		</jsp:include>
 
 
 		<!-- =========================
          지도 + 검색 영역
          ========================= -->
 		<div class="container">
-
 			<div class="sidebar">
 
 				<!-- =================================================
@@ -483,13 +428,9 @@ body {
              ================================================= -->
 
 				<div class="search-group">
-
 					<label for="areaName"> 행정동 </label> <select id="areaName">
-
 						<option value="">전체 행정동</option>
-
 					</select>
-
 				</div>
 
 
@@ -498,10 +439,8 @@ body {
              ================================================= -->
 
 				<div class="search-group">
-
 					<label for="facilityName"> 시설명 </label> <input type="text"
 						id="facilityName" placeholder="시설명을 입력하세요">
-
 				</div>
 
 
@@ -510,10 +449,8 @@ body {
              ================================================= -->
 
 				<div class="search-group">
-
 					<label for="facilitySize"> 최소 면적(㎡) </label> <input type="number"
 						id="facilitySize" placeholder="예: 100" min="0">
-
 				</div>
 
 
@@ -522,15 +459,9 @@ body {
              ================================================= -->
 
 				<div class="button-group">
-
 					<button type="button" class="search-button"
 						onclick="searchIdleSpace()">검색</button>
-
-
-					<button type="button" class="reset-button" onclick="resetSearch()">
-
-						초기화</button>
-
+					<button type="button" class="reset-button" onclick="resetSearch()">초기화</button>
 				</div>
 
 
@@ -561,19 +492,16 @@ body {
 
 
 
-	<script>
-
+<script>
+var contextPath = '${pageContext.request.contextPath}';
 
 /* =========================================================
    1. 지도 생성
    ========================================================= */
 
-var container =
-    document.getElementById('map');
-
+var container = document.getElementById('map');
 
 var options = {
-
     center:
         new kakao.maps.LatLng(
             37.5665,
@@ -584,36 +512,15 @@ var options = {
 
 };
 
+var map = new kakao.maps.Map(container, options);
 
-var map =
-    new kakao.maps.Map(
-        container,
-        options
-    );
-
-
-
-/* =========================================================
-   2. 마커 배열
-   ========================================================= */
-
+//   2. 마커 배열
 var markers = [];
 
+//   3. InfoWindow 하나만 사용
+var infowindow = new kakao.maps.InfoWindow({zIndex: 1});
 
-
-/* =========================================================
-   3. InfoWindow 하나만 사용
-   ========================================================= */
-
-var infowindow = new kakao.maps.InfoWindow({
-        zIndex: 1
-    });
-
-
-
-/* =========================================================
-   4. 현재 선택된 마커
-   ========================================================= */
+//   4. 현재 선택된 마커
 
 /*
  * 추천 API 응답이 늦게 도착했을 때
@@ -624,61 +531,31 @@ var infowindow = new kakao.maps.InfoWindow({
 
 var currentMarker = null;
 
-
-
-/* =========================================================
-   5. 행정동 목록
-   ========================================================= */
-
+//   5. 행정동 목록
 var areaNames = new Set();
 
-
-
-/* =========================================================
-   6. DB 데이터 → 마커 생성
-   ========================================================= */
+//   6. DB 데이터 → 마커 생성
 
 <c:forEach var="idleSpace" items="${idleSpaces}">
 
+    var idleId = ${idleSpace.idleId};
+    var latitude = ${idleSpace.latitude};
+    var longitude = ${idleSpace.longtitude};
+    
+    var facilityName = '${idleSpace.facilityName}';
+    var address = '${idleSpace.address}';
+    var areaName = '${idleSpace.areaName}';
 
-    var idleId =
-        ${idleSpace.idleId};
-
-
-    var latitude =
-        ${idleSpace.latitude};
-
-
-    var longitude =
-        ${idleSpace.longtitude};
-
-
-    var facilityName =
-        '${idleSpace.facilityName}';
-
-
-    var address =
-        '${idleSpace.address}';
-
-
-    var areaName =
-        '${idleSpace.areaName}';
-
-
-    var facilitySize =
-        ${idleSpace.facilitySize};
+    var facilitySize = ${idleSpace.facilitySize};
 
 
 
     /* 행정동 목록 */
-
     if (areaName) {
         areaNames.add(areaName);
     }
 
-
     /* 마커 위치 */
-
     var position =
         new kakao.maps.LatLng(
             latitude,
@@ -687,7 +564,6 @@ var areaNames = new Set();
 
 
     /* 마커 생성 */
-
     var marker =
         new kakao.maps.Marker({
             position: position,
@@ -695,9 +571,7 @@ var areaNames = new Set();
         });
 
 
-
     /* 마커에 DB 데이터 저장 */
-
     marker.idleSpace = {
         idleId: idleId,
         facilityName: facilityName,
@@ -711,14 +585,9 @@ var areaNames = new Set();
 
 
     /* 마커 배열에 저장 */
-
     markers.push(marker);
 
-
-
-    /* =================================================
-       마커 클릭 이벤트
-       ================================================= */
+	//   마커 클릭 이벤트
 
     kakao.maps.event.addListener(
         marker,
@@ -741,65 +610,42 @@ var areaNames = new Set();
 function createBasicInfoHtml(data) {
 
     return (
-
         '<div class="info-window">' +
-
             '<div class="info-title">' +
-
                 escapeHtml(
                     data.facilityName
                 ) +
-
             '</div>' +
-
-
             '<div class="info-area">' +
-
                 '📍 ' +
-
                 escapeHtml(
                     data.areaName
                 ) +
 
             '</div>' +
 
-
             '<div class="basic-info">' +
-
                 '<div class="info-row">' +
-
                     '<div class="info-label">' +
                         '주소' +
                     '</div>' +
-
                     '<div class="info-value">' +
                         escapeHtml(
                             data.address
                         ) +
                     '</div>' +
-
                 '</div>' +
-
-
                 '<div class="info-row">' +
-
                     '<div class="info-label">' +
                         '면적' +
                     '</div>' +
-
                     '<div class="info-value">' +
-
                         data.facilitySize +
-
                         '㎡' +
-
                     '</div>' +
-
                 '</div>' +
 
-
             '</div>' +
-
         '</div>'
 
     );
@@ -812,33 +658,21 @@ function createBasicInfoHtml(data) {
    8. 추천 HTML 생성
    ========================================================= */
 
-function createRecommendationHtml(
-    recommendations
-) {
-
+function createRecommendationHtml(recommendations) {
 
     /* 추천 정보가 없는 경우 */
-
     if (!recommendations || recommendations.length === 0) {
-
         return (
 
             '<div class="recommendation-box">' +
-
                 '<div class="recommendation-header">' +
-
                     '<div class="recommendation-header-title">' +
                         '⭐ 추천 정보' +
                     '</div>' +
-
                 '</div>' +
-
                 '<div class="no-recommendation">' +
-
                     '등록된 추천 정보가 없습니다.' +
-
                 '</div>' +
-
             '</div>'
 
         );
@@ -850,136 +684,80 @@ function createRecommendationHtml(
     /* 추천 영역 시작 */
 
     var html =
-
         '<div class="recommendation-box">' +
-
             '<div class="recommendation-header">' +
-
                 '<div class="recommendation-header-title">' +
-
                     '⭐ 추천 TOP 3' +
-
                 '</div>' +
-
                 '<div class="recommendation-header-sub">' +
-
                     '공간 적합도 순위' +
-
                 '</div>' +
-
             '</div>';
 
 
 
     /* 최대 3개 */
 
-    var top3 =
-        recommendations.slice(0, 3);
-
-
+    var top3 = recommendations.slice(0, 3);
 
     top3.forEach(
         function(recommendation) {
-
-            var score = Number(
-                    recommendation.score
-                );
-
-
+            var score = Number(recommendation.score);
 
             /* 추천 이유 */
-
-            var reasonText =
-                recommendation.recommendationReason;
-
+            var reasonText = recommendation.recommendationReason;
             var reasons = [];
-
             if (reasonText) {
                 reasons = reasonText.split(', ');
             }
 
-
-
             /* 추천 카드 */
             html +=
-
                 '<div class="recommendation-item">' +
-
-
                     '<div class="recommendation-title">' +
-
                         '<div class="recommendation-type">' +
-
                             '<span class="recommendation-rank">' +
-
                                 recommendation.rank +
-
                                 '위 ' +
-
                             '</span>' +
-
                             '<span class="recommendation-badge">' +
-
                                 escapeHtml(
                                     recommendation.recommendationType
                                 ) +
-
                             '</span>' +
-
                         '</div>' +
-
                         '<div class="recommendation-score">' +
                             score.toFixed(2) +
                             '<span>점</span>' +
-
                         '</div>' +
-
-
                     '</div>';
 
 
 
             /* 추천 이유 */
-
             if (reasons.length > 0) {
-
-                html +=
-                    '<div class="recommendation-reasons">';
+                html += '<div class="recommendation-reasons">';
 
                 reasons.forEach(
-
                     function(reason) {
-
                         html +=
-
                             '<div class="reason">' +
-
                                 '<span class="reason-check">✓ </span>' +
-
                                 escapeHtml(reason) +
-
                             '</div>';
                     }
-
                 );
 
-                html +=
-
-                    '</div>';
+                html += '</div>';
 
             }
 
-            html +=
-
-                '</div>';
-
+            html += '</div>';
         }
-
     );
 
 
     html += '</div>';
-
     return html;
 
 }
@@ -1007,6 +785,39 @@ function escapeHtml(value) {
 }
 
 
+/* =========================================================
+채팅 페이지 이동
+========================================================= */
+
+function goToChat(idleId) {
+
+ if (!idleId) {
+     console.error('idleId가 없습니다.');
+     return;
+ }
+
+ window.location.href =
+     contextPath + '/chat/' + idleId;
+}
+
+
+/* =========================================================
+채팅 버튼 HTML
+========================================================= */
+
+function createChatButtonHtml(idleId) {
+
+ return (
+     '<div class="info-chat-area">' +
+         '<button type="button" ' +
+             'class="chat-entry-button" ' +
+             'onclick="goToChat(' + idleId + ')">' +
+             '채팅 참여' +
+         '</button>' +
+     '</div>'
+ );
+}
+
 
 /* =========================================================
    10. InfoWindow 표시
@@ -1018,8 +829,7 @@ function showInfoWindow(marker) {
     currentMarker = marker;
 
     /* 마커 데이터 */
-    var data =
-        marker.idleSpace;
+    var data = marker.idleSpace;
 
 
     /* =====================================================
@@ -1027,95 +837,58 @@ function showInfoWindow(marker) {
        ===================================================== */
 
     var loadingContent =
-
         '<div class="info-window">' +
-
             '<div class="info-title">' +
-
                 escapeHtml(
                     data.facilityName
                 ) +
-
             '</div>' +
-
             '<div class="info-area">' +
-
                 '📍 ' +
-
                 escapeHtml(
                     data.areaName
                 ) +
-
             '</div>' +
-
             '<div class="basic-info">' +
-
                 '<div class="info-row">' +
-
                     '<div class="info-label">' +
                         '주소' +
                     '</div>' +
-
                     '<div class="info-value">' +
-
                         escapeHtml(
                             data.address
                         ) +
-
                     '</div>' +
-
                 '</div>' +
-
                 '<div class="info-row">' +
-
                     '<div class="info-label">' +
                         '면적' +
                     '</div>' +
-
                     '<div class="info-value">' +
-
                         data.facilitySize +
-
                         '㎡' +
-
                     '</div>' +
-
                 '</div>' +
-
             '</div>' +
-
             '<div class="recommendation-box">' +
-
                 '<div class="recommendation-header">' +
-
                     '<div class="recommendation-header-title">' +
-
                         '⭐ 추천 정보' +
-
                     '</div>' +
-
                 '</div>' +
-
                 '<div class="loading">' +
-
                     '추천 정보를 불러오는 중...' +
-
                 '</div>' +
-
             '</div>' +
-
+            createChatButtonHtml(data.idleId) +
         '</div>';
-
 
 
     /* 로딩 화면 표시 */
     infowindow.setContent(loadingContent);
 
 
-    infowindow.open(
-        map,
-        marker
-    );
+    infowindow.open(map, marker);
 
 
 
@@ -1123,46 +896,28 @@ function showInfoWindow(marker) {
        추천 API 호출
        ===================================================== */
 
-    apiFetch(
-        '${pageContext.request.contextPath}/recommendation/' +
-        data.idleId
-    )
-
+    apiFetch('${pageContext.request.contextPath}/recommendation/' + data.idleId)
     .then(
 
         function(response) {
-
             if (!response.ok) {
-                throw new Error(
-                    '추천 API 호출 실패: ' +
-                    response.status
-                );
+                throw new Error('추천 API 호출 실패: ' + response.status);
             }
-
             return response.json();
-
         }
 
     )
-
     .then(
 
         function(recommendations) {
 
-
-            /*
-             * 다른 마커를 클릭했다면
-             * 이전 요청 결과를 무시한다.
-             */
-
+            // 다른 마커를 클릭했다면 이전 요청 결과를 무시한다.
             if (currentMarker !== marker) {
                 return;
             }
 
 
-
             /* 추천 HTML 생성 */
-
             var recommendationHtml = createRecommendationHtml(recommendations);
 
 
@@ -1171,87 +926,54 @@ function showInfoWindow(marker) {
                ================================================= */
 
             var content =
-
                 '<div class="info-window">' +
-
                     '<div class="info-title">' +
-
                         escapeHtml(
                             data.facilityName
                         ) +
-
                     '</div>' +
-
-
                     '<div class="info-area">' +
-
                         '📍 ' +
-
                         escapeHtml(
                             data.areaName
                         ) +
-
                     '</div>' +
 
-
                     '<div class="basic-info">' +
-
-
                         '<div class="info-row">' +
-
                             '<div class="info-label">' +
                                 '주소' +
                             '</div>' +
-
                             '<div class="info-value">' +
-
                                 escapeHtml(
                                     data.address
                                 ) +
-
                             '</div>' +
-
                         '</div>' +
 
-
                         '<div class="info-row">' +
-
                             '<div class="info-label">' +
                                 '면적' +
                             '</div>' +
-
                             '<div class="info-value">' +
-
                                 data.facilitySize +
-
                                 '㎡' +
-
                             '</div>' +
-
                         '</div>' +
-
-
                     '</div>' +
-
-
                     recommendationHtml +
-
-
+                    
+                    /* 채팅 참여 버튼 */
+                    createChatButtonHtml(data.idleId) +
+                    
                 '</div>';
 
 
 
             /* InfoWindow 갱신 */
+            infowindow.setContent(content);
 
-            infowindow.setContent(
-                content
-            );
-
-
-            infowindow.open(
-                map,
-                marker
-            );
+            infowindow.open(map,marker);
 
         }
 
@@ -1259,18 +981,9 @@ function showInfoWindow(marker) {
 
     .catch(
         function(error) {
-            console.error(
-                '추천 정보 조회 오류:',
-                error
-            );
+            console.error('추천 정보 조회 오류:', error);
 
-
-
-            /*
-             * 다른 마커를 클릭했다면
-             * 오류 메시지도 표시하지 않는다.
-             */
-
+            // 다른 마커를 클릭했다면 오류 메시지도 표시하지 않는다.
             if (currentMarker !== marker) {
                 return;
             }
@@ -1278,105 +991,60 @@ function showInfoWindow(marker) {
 
 
             /* 오류 화면 */
-
             var content =
-
                 '<div class="info-window">' +
-
-
                     '<div class="info-title">' +
-
                         escapeHtml(
                             data.facilityName
                         ) +
-
                     '</div>' +
-
-
                     '<div class="info-area">' +
-
                         '📍 ' +
-
                         escapeHtml(
                             data.areaName
                         ) +
-
                     '</div>' +
-
-
                     '<div class="basic-info">' +
-
                         '<div class="info-row">' +
-
                             '<div class="info-label">' +
                                 '주소' +
                             '</div>' +
-
                             '<div class="info-value">' +
-
                                 escapeHtml(
                                     data.address
                                 ) +
-
                             '</div>' +
-
                         '</div>' +
-
-
                         '<div class="info-row">' +
-
                             '<div class="info-label">' +
                                 '면적' +
                             '</div>' +
-
                             '<div class="info-value">' +
-
                                 data.facilitySize +
-
                                 '㎡' +
-
                             '</div>' +
-
                         '</div>' +
-
                     '</div>' +
-
 
                     '<div class="recommendation-box">' +
-
                         '<div class="recommendation-header">' +
-
                             '<div class="recommendation-header-title">' +
-
                                 '⭐ 추천 정보' +
-
                             '</div>' +
-
                         '</div>' +
-
-
                         '<div class="no-recommendation">' +
-
                             '추천 정보를 불러오지 못했습니다.' +
-
                         '</div>' +
-
                     '</div>' +
-
+                    createChatButtonHtml(data.idleId) +
 
                 '</div>';
 
 
 
-            infowindow.setContent(
-                content
-            );
+            infowindow.setContent(content);
 
-
-            infowindow.open(
-                map,
-                marker
-            );
+            infowindow.open(map, marker);
 
         }
 
@@ -1390,41 +1058,21 @@ function showInfoWindow(marker) {
    11. 행정동 SELECT 생성
    ========================================================= */
 
-var areaSelect =
-    document.getElementById(
-        'areaName'
-    );
+var areaSelect = document.getElementById('areaName');
 
 
 Array.from(areaNames)
-
     .sort()
-
     .forEach(
-
         function(area) {
+            var option = document.createElement('option');
 
+            option.value =area;
+            option.textContent = area;
 
-            var option =
-                document.createElement(
-                    'option'
-                );
-
-
-            option.value =
-                area;
-
-
-            option.textContent =
-                area;
-
-
-            areaSelect.appendChild(
-                option
-            );
+            areaSelect.appendChild(option);
 
         }
-
     );
 
 
@@ -1436,111 +1084,54 @@ Array.from(areaNames)
 function searchIdleSpace() {
 
 
-    var selectedArea =
-        document.getElementById(
-            'areaName'
-        ).value;
+    var selectedArea = document.getElementById('areaName').value;
 
-
-
-    var facilityKeyword =
-        document.getElementById(
-            'facilityName'
-        ).value
+    var facilityKeyword = document.getElementById('facilityName')
+        .value
         .trim()
         .toLowerCase();
 
-
-
-    var minSizeValue =
-        document.getElementById(
-            'facilitySize'
-        ).value;
-
-
-
+    var minSizeValue = document.getElementById('facilitySize').value;
     var minSize = 0;
 
-
-
     if (minSizeValue !== '') {
-
-        minSize =
-            Number(
-                minSizeValue
-            );
-
+        minSize = Number(minSizeValue);
     }
-
-
 
     var resultCount = 0;
 
-
-
     /* 검색 결과 */
-
     var searchResults = [];
 
-
-
     /* 모든 마커 검사 */
-
     markers.forEach(
-
         function(marker) {
-
-
-            var data =
-                marker.idleSpace;
-
-
-
+            var data = marker.idleSpace;
             var matchArea = true;
-
             var matchFacility = true;
-
             var matchSize = true;
 
 
-
             /* 행정동 */
-
             if (selectedArea !== '') {
-
                 matchArea =
                     data.areaName ===
                     selectedArea;
-
             }
 
 
-
             /* 시설명 */
-
             if (facilityKeyword !== '') {
-
-                matchFacility =
-
-                    data.facilityName
+                matchFacility = data.facilityName
                         .toLowerCase()
-                        .includes(
-                            facilityKeyword
-                        );
-
+                        .includes(facilityKeyword);
             }
 
 
 
             /* 면적 */
-
             if (minSize > 0) {
-
-                matchSize =
-
-                    Number(
-                        data.facilitySize
-                    ) >= minSize;
+                matchSize = Number(data.facilitySize) >= minSize;
 
             }
 
@@ -1548,62 +1139,29 @@ function searchIdleSpace() {
 
             /* 모든 조건 만족 */
 
-            if (
-
-                matchArea &&
-
-                matchFacility &&
-
-                matchSize
-
-            ) {
-
+            if (matchArea &&matchFacility &&matchSize) {
 
                 marker.setMap(map);
-
-
-                searchResults.push(
-                    marker
-                );
-
-
+                searchResults.push(marker);
                 resultCount++;
 
             }
-
             else {
-
                 marker.setMap(null);
-
             }
-
         }
-
     );
 
 
 
     /* 결과 개수 */
-
-    document.getElementById(
-        'resultCount'
-    ).textContent =
-        resultCount;
-
-
+    document.getElementById('resultCount').textContent = resultCount;
 
     /* 결과 목록 */
-
-    renderResultList(
-        searchResults
-    );
-
-
+    renderResultList(searchResults);
 
     /* InfoWindow 닫기 */
-
     infowindow.close();
-
 
     currentMarker = null;
 
@@ -1615,27 +1173,16 @@ function searchIdleSpace() {
    13. 검색 결과 목록
    ========================================================= */
 
-function renderResultList(
-    searchResults
-) {
+function renderResultList(searchResults) {
 
-
-    var resultList =
-        document.getElementById(
-            'resultList'
-        );
-
+    var resultList = document.getElementById('resultList');
 
     /* 기존 목록 삭제 */
-
     resultList.innerHTML = '';
 
 
-
     /* 검색 결과 없음 */
-
     if (searchResults.length === 0) {
-
         var noResult = document.createElement('div');
 
         noResult.className = 'no-result';
@@ -1665,20 +1212,17 @@ function renderResultList(
             name.className = 'facility-name';
             name.textContent = data.facilityName;
 
-
             /* 면적 / 행정동 */
             var info = document.createElement('div');
 
             info.className = 'facility-info';
             info.textContent = data.areaName + ' · ' + data.facilitySize + '㎡';
 
-
             /* 주소 */
             var address = document.createElement('div');
 
             address.className = 'facility-address';
             address.textContent = data.address;
-
 
             /* 아이템에 추가 */
             item.appendChild(name);
@@ -1717,21 +1261,13 @@ function moveToMarker(marker) {
     var data = marker.idleSpace;
 
     /* 해당 좌표 */
-
-    var position = new kakao.maps.LatLng(
-            data.latitude,
-            data.longitude
-        );
-
+    var position = new kakao.maps.LatLng(data.latitude, data.longitude);
 
     /* 지도 이동 */
     map.setCenter(position);
 
-
     /* 지도 확대 */
     map.setLevel(3);
-
-
 
     /* InfoWindow 표시 */
     showInfoWindow(marker);
@@ -1748,25 +1284,13 @@ function resetSearch() {
 
 
     /* 검색창 초기화 */
-
-    document.getElementById(
-        'areaName'
-    ).value = '';
-
-
-    document.getElementById(
-        'facilityName'
-    ).value = '';
-
-
-    document.getElementById(
-        'facilitySize'
-    ).value = '';
+    document.getElementById('areaName').value = '';
+    document.getElementById('facilityName').value = '';
+    document.getElementById('facilitySize').value = '';
 
 
 
     /* 모든 마커 표시 */
-
     markers.forEach(
         function(marker) {
             marker.setMap(map);
@@ -1775,33 +1299,17 @@ function resetSearch() {
 
 
     /* 결과 개수 */
-
-    document.getElementById(
-        'resultCount'
-    ).textContent =
-        markers.length;
-
+    document.getElementById('resultCount').textContent = markers.length;
 
     /* 전체 결과 목록 */
-    renderResultList(
-        markers
-    );
+    renderResultList(markers);
 
     /* InfoWindow 닫기 */
-
     infowindow.close();
     currentMarker = null;
 
-
     /* 서울 전체 */
-
-    map.setCenter(
-        new kakao.maps.LatLng(
-            37.5665,
-            126.9780
-        )
-    );
-
+    map.setCenter(new kakao.maps.LatLng(37.5665, 126.9780));
 
     map.setLevel(8);
 
@@ -1813,9 +1321,7 @@ function resetSearch() {
    16. 페이지 처음 열었을 때
    ========================================================= */
 
-renderResultList(
-    markers
-);
+renderResultList(markers);
 
 
 </script>
