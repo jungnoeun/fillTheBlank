@@ -22,7 +22,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtTokenProvider {
 	private final SecretKey key;
 	
-	private final long accessTokenValidity = 1000L * 60/* * 30*/; // access token 유효기간 30분
+	private final long accessTokenValidity = 1000L * 60 * 30; // access token 유효기간 30분
 	private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 7; // refresh token 유효기간 7일
 	
 	public JwtTokenProvider(@Value("${jwt.secret}") String secret) {
